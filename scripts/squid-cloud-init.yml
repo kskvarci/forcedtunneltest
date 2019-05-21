@@ -1,0 +1,45 @@
+#cloud-config
+
+# Configure Squid proxy on Azure
+
+packages:
+ - squid
+
+write_files:
+-   content: |
+        #source ACLs
+        acl trusted src 10.0.0.0/8
+
+        #proxy protocol config
+        http_port 3128
+
+        #destination ACLs
+        acl whitelistre dstdom_regex "/etc/squid/allow-domains-regex.txt"
+
+        #squid access
+        http_access deny to_localhost
+        http_access allow all
+
+        #squid traffic routing
+        always_direct allow whitelistre
+        never_direct allow all
+
+        # Leave coredumps in the first cache dir
+        coredump_dir /var/spool/squid
+       
+        #keep last 5 days or rotated logs
+        #crontab set to rotate daily
+        logfile_rotate 5
+        strip_query_terms off
+    path: /etc/squid/squid.conf
+-   content: |
+        (^|\.)microsoft\.com
+        (^|\.)blob\.core\.windows\.net
+        (^|\.)core\.windows\.net
+        (^|\.)azurewebsites\.net
+        (^|\.)azurewebsites\.windows\.net
+        (^|\.)youtube\.com
+    path: /etc/squid/allow-domains-regex.txt
+
+runcmd:
+ - /usr/sbin/squid -k reconfigure
