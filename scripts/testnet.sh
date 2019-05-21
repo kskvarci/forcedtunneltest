@@ -4,7 +4,7 @@
 location="eastus2"
 resourceGroupName="TestNet-Rg"
 vnetName="TestVnet"
-sourceIP="your internet ip here/32"
+sourceIP="xxx.xxx.xxx.xxx/32"
 
 # Create a resource group
 az group create --location $location --name $resourceGroupName

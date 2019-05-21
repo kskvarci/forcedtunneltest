@@ -1,6 +1,6 @@
 #cloud-config
 
-# Configure Squid proxy on Azure
+# This file is used by cloud-init to install and configure squid proxy.
 
 packages:
  - squid
