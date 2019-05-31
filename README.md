@@ -55,16 +55,21 @@ This article will walk you through deploying a test network with the following c
 - All subnets can route to one another by default
 - Each subnet has a dedicated NSG to control traffic flows
 
+*OPTIONAL:*
+
+A script is included that will deploy an open source Squid proxy server on Ubuntu 18.09. THe proxy server will be configured with a regex based white listing facility turned on. This can be used to test the proxying of specific traffic from the workload-subnet.
+
 ## Setting up the Test Environment
 
 The below assumes you're using a linux command line (bash).
+It also assumes that you have the Azure CLI installed, that you have authenticated and that you have already selected the subscription that you would like to deploy into.
 
 1. Clone this repo:
 ``` bash
 git clone https://github.com/kskvarci/forcedtunneltest.git
 ```
 
-2. Open and modify scripts\/testnet.sh with your favorite editor. At the top of the file in the variables section replace the xxx.xxx.xxx.xxx section w/ your internet facing IP address. This IP will be used to create an NSG rule to allow you to SSH into your proxy server.
+2. CD into the forcedtunneltest folder and open and modify scripts\/testnet.sh with your favorite editor. At the top of the file in the variables section replace the xxx.xxx.xxx.xxx section w/ your internet facing IP address. This IP will be used to create an NSG rule to allow you to SSH into your proxy server.
 ``` bash
 # Variables
 location="eastus2"
@@ -72,8 +77,10 @@ resourceGroupName="TestNet-Rg"
 vnetName="TestVnet"
 sourceIP="xxx.xxx.xxx.xxx/32"
 ```
-3. Run testnet.sh to deploy the network.
+3. Make the scripts in the scripts folder executable and then run testnet.sh to deploy the network.
 ``` base
+cd scripts
+chmod a+x *.sh
 ./testnet.sh
 ```
 4. Open and modify deploysquid.sh. In the variables section replace the userName and sshKey variables w/ your values.
@@ -137,5 +144,33 @@ runcmd:
 ``` bash
 ./deploysquid.sh
 ```
+Make note of the private IP address returned from the squid deployment script as this is the proxy IP that yuou will use for systems that you deploy within the workload-subnet.
+
 ## Testing
-Testing recommendations
+
+Steps for testing will vary depending on your scenario.
+
+I've included a simple script to deploy two Windows servers to get you started. The first server is deployed into the infra-subnet and is accessible from the internet via a public IP. The second server is deployed into the workload-subnet, has no public IP and is not accessible from the internet.
+
+To deploy:
+
+1) Open and modify deploywindowstest.sh. In the variables section replace the userName and password variables w/ your values.
+``` bash
+# Parameters
+location="eastus2"
+resourceGroupName="TestNet-Rg"
+vnetName="TestVnet"
+userName="your username here"
+password="your password here"
+```
+2) Run deploywindowstest.sh to deploy the VMs.
+``` bash
+./deploywindowstest.sh
+```
+
+You can experiment by doing the following:
+
+1) Connect to the jump box by RDPing to the public IP.
+2) From there, connect to the server that you've deployed into the workload-subnet
+3) Configure the proxy settings on the server to connect through the Squid proxy server.
+

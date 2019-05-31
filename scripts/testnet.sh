@@ -29,8 +29,9 @@ az network nsg create --resource-group $resourceGroupName --name "infra-nsg"
 # Configure a rule on the workload NSG to block outbound internet access
 az network nsg rule create --resource-group $resourceGroupName --name "dropinternet-outbound" --priority 100 --direction "Outbound" --protocol "*" --source-address-prefixes "*" --source-port-ranges "*" --destination-address-prefixes "Internet" --destination-port-ranges "*" --access "Deny" --nsg-name "workload-nsg"
 
-# Configure a rule on the proxy NSG to allow inbound SSH
-z network nsg rule create --resource-group $resourceGroupName --name "ssh-inbound" --priority 100 --direction "Inbound" --protocol "*" --source-address-prefixes $sourceIP --source-port-ranges "*" --destination-address-prefixes "VirtualNetwork" --destination-port-ranges "22" --access "Allow" --nsg-name "proxy-nsg"
+# Configure a rule on the proxy NSG to allow inbound SSH. Also allow RDP into the infra-subnet.
+az network nsg rule create --resource-group $resourceGroupName --name "ssh-inbound" --priority 100 --direction "Inbound" --protocol "*" --source-address-prefixes $sourceIP --source-port-ranges "*" --destination-address-prefixes "VirtualNetwork" --destination-port-ranges "22" --access "Allow" --nsg-name "proxy-nsg"
+az network nsg rule create --resource-group $resourceGroupName --name "rdp-inbound" --priority 100 --direction "Inbound" --protocol "*" --source-address-prefixes $sourceIP --source-port-ranges "*" --destination-address-prefixes "VirtualNetwork" --destination-port-ranges "3389" --access "Allow" --nsg-name "infra-nsg"
 
 # assign the NSGs to the appropriate subnets
 az network vnet subnet update --resource-group $resourceGroupName --name "workload-subnet" --vnet-name $vnetName --network-security-group "workload-nsg"
