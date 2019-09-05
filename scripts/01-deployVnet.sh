@@ -2,7 +2,7 @@
 
 # Parameters
 location="eastus2"
-resourceGroupName="TestNet-Rg"
+resourceGroupName="DemoNet-Rg"
 spokeVnetName="SpokeVnet"
 hubVnetName="HubVnet"
 sourceIP="xxx.xxx.xxx.xxx/32"
@@ -15,7 +15,7 @@ az group create --location $location --name $resourceGroupName
 az network vnet create --resource-group $resourceGroupName --name $hubVnetName --address-prefixes "10.0.0.0/16"
 
 # Create a subnet for our Firewall
-az network vnet subnet create --resource-group $resourceGroupName --name "firewall" --vnet-name $hubVnetName --address-prefixes "10.0.0.0/24"
+az network vnet subnet create --resource-group $resourceGroupName --name "AzureFirewallSubnet" --vnet-name $hubVnetName --address-prefixes "10.0.0.0/24"
 
 # Create a subnet for our proxy server
 az network vnet subnet create --resource-group $resourceGroupName --name "proxy-subnet" --vnet-name $hubVnetName --address-prefixes "10.0.1.0/24"
@@ -48,11 +48,11 @@ az network vnet subnet update --resource-group $resourceGroupName --name "proxy-
 az network vnet subnet update --resource-group $resourceGroupName --name "jumpbox-subnet" --vnet-name $hubVnetName --network-security-group "jumpbox-nsg"
 
 # Create a user-defined route to drop internet detined traffic
-az network route-table create --resource-group $resourceGroupName --name "dropinternet-udr"
-az network route-table route create --resource-group $resourceGroupName --name "dropinternet-route" --route-table-name "dropinternet-udr" --address-prefix "0.0.0.0/0" --next-hop-type "None"
+az network route-table create --resource-group $resourceGroupName --name "workload-udr"
+az network route-table route create --resource-group $resourceGroupName --name "dropinternet-route" --route-table-name "workload-udr" --address-prefix "0.0.0.0/0" --next-hop-type "None"
 
 # Assign the internet blocking UDR to the workload subnet
-az network vnet subnet update --resource-group $resourceGroupName --name "workload-subnet" --vnet-name $spokeVnetName --route-table "dropinternet-udr"
+az network vnet subnet update --resource-group $resourceGroupName --name "workload-subnet" --vnet-name $spokeVnetName --route-table "workload-udr"
 
 # Peer Hub and Spoke Networks
 az network vnet peering create --resource-group $resourceGroupName --name hubtospoke --vnet-name $hubVnetName --remote-vnet $spokeVnetName --allow-vnet-access
