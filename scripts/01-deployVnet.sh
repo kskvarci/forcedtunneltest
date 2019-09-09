@@ -2,9 +2,11 @@
 
 # Parameters
 location="eastus2"
-resourceGroupName="DemoNet-Rg"
+resourceGroupName="AKS-Workshop-Rg"
+
 spokeVnetName="SpokeVnet"
 hubVnetName="HubVnet"
+
 sourceIP="xxx.xxx.xxx.xxx/32"
 
 # Create a resource group
@@ -29,6 +31,9 @@ az network vnet create --resource-group $resourceGroupName --name $spokeVnetName
 
 # Create a subnet for our test workloads
 az network vnet subnet create --resource-group $resourceGroupName --name "workload-subnet" --vnet-name $spokeVnetName --address-prefixes "10.1.0.0/24"
+
+# Create an AppGW Subnet
+az network vnet subnet create --resource-group $resourceGroupName --name "appgw-subnet" --vnet-name $spokeVnetName --address-prefixes "10.1.1.0/24"
 
 #_________________________________________________________________________________
 # Create NSGs for each subnet

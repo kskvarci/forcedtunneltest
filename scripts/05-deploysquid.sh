@@ -2,8 +2,10 @@
 
 # Parameters
 location="eastus2"
-resourceGroupName="DemoNet-Rg"
+resourceGroupName="AKS-Workshop-Rg"
+
 vnetName="HubVnet"
+
 userName="your username here"
 sshKey="your public ssh key here"
 
