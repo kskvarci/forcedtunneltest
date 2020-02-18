@@ -1,7 +1,7 @@
 # !/bin/bash
 
 # Parameters
-resourceGroupName="AKS-Workshop-Rg"
+resourceGroupName="HubSpoke-Rg"
 scrCidr="10.1.0.0/24"
 
 # Add firewall Rules for AKS comms
@@ -16,6 +16,7 @@ az network firewall application-rule create --collection-name "AKS-ReqCol" --fir
 az network firewall application-rule create --collection-name "AKS-ReqCol" --firewall-name SharedFirewall --name Allow-MCRStorage --protocols Https=443 --resource-group $resourceGroupName --target-fqdns *.cdn.mscr.io --source-addresses $scrCidr
 az network firewall application-rule create --collection-name "AKS-ReqCol" --firewall-name SharedFirewall --name Allow-KubeGetPut --protocols Https=443 --resource-group $resourceGroupName --target-fqdns management.azure.com --source-addresses $scrCidr
 az network firewall application-rule create --collection-name "AKS-ReqCol" --firewall-name SharedFirewall --name Allow-AAD --protocols Https=443 --resource-group $resourceGroupName --target-fqdns login.microsoftonline.com --source-addresses $scrCidr
+az network firewall application-rule create --collection-name "AKS-ReqCol" --firewall-name SharedFirewall --name Allow-ACS --protocols Https=443 --resource-group $resourceGroupName --target-fqdns acs-mirror.azureedge.net --source-addresses $scrCidr
 
 # App Rules (Optional)
 az network firewall application-rule create --collection-name "AKS-OptCol" --firewall-name SharedFirewall --name Allow-NodeUpdates --protocols Http=80 --resource-group $resourceGroupName --target-fqdns security.ubuntu.com azure.archive.ubuntu.com changelogs.ubuntu.com --source-addresses $scrCidr --priority 201 --action Allow

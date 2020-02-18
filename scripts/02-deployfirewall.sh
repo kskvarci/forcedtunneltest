@@ -2,7 +2,7 @@
 
 # Parameters
 location="eastus2"
-resourceGroupName="AKS-Workshop-Rg"
+resourceGroupName="HubSpoke-Rg"
 
 hubVnetName="HubVnet"
 
